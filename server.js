@@ -6,6 +6,8 @@ var http = require('http'),
 /* Global variables */
 var listingData, server;
 
+
+
 var requestHandler = function(request, response) {
   var parsedUrl = url.parse(request.url);
 
@@ -16,14 +18,29 @@ var requestHandler = function(request, response) {
     HINT: explore the request object and its properties
     http://stackoverflow.com/questions/17251553/nodejs-request-object-documentation
    */
-};
+   if (parsedUrl.path === '/listings'){
 
+     response.write(JSON.stringify(listingData));
+
+   } else {
+     response.statusCode = 404;
+     response.write("Bad gateway error")
+
+   }
+   response.end();
+};
 fs.readFile('listings.json', 'utf8', function(err, data) {
   /*
     This callback function should save the data in the listingData variable,
     then start the server.
-
-    This comment is here to prove that I understand how to change files
-    in github
    */
+      if (err) throw err
+
+      listingData = JSON.parse(data);  //Sends json data as javascript object
+
+
+   server = http.createServer(requestHandler);  //Create a new server
+   server.listen(port, function() {   //This listens for callbacks to see if the server is connected
+     //console.log("Server has started on " + port)
+   });
 });
